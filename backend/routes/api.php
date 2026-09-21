@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\LeadController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Middleware\EnsureAccountIsActive;
 use App\Http\Middleware\SetTenantContext;
 use Illuminate\Support\Facades\Route;
@@ -26,4 +27,6 @@ Route::prefix('v1')->middleware(['auth:sanctum', SetTenantContext::class, Ensure
     Route::get('leads/{lead}', [LeadController::class, 'show']);
     Route::patch('leads/{lead}', [LeadController::class, 'update']);
     Route::delete('leads/{lead}', [LeadController::class, 'destroy']);
+
+    Route::get('users/assignable', [UserController::class, 'assignable']);
 });

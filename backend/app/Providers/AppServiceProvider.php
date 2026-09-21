@@ -24,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('viewReports', fn (User $user) => $user->hasAnyRole(UserRole::Admin, UserRole::Manager));
+        Gate::define('listAssignableUsers', fn (User $user) => $user->hasAnyRole(UserRole::Admin, UserRole::Manager));
     }
 }
