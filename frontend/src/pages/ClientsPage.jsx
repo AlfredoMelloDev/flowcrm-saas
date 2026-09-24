@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { useLeads } from '../hooks/useLeads'
-import { useDeleteLead } from '../hooks/useDeleteLead'
+import { useClients } from '../hooks/useClients'
+import { useDeleteClient } from '../hooks/useDeleteClient'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { Button } from '../components/ui/Button'
 import { Pagination } from '../components/ui/Pagination'
-import { LeadFilters } from '../components/leads/LeadFilters'
-import { LeadTable } from '../components/leads/LeadTable'
-import { LeadFormModal } from '../components/leads/LeadFormModal'
+import { ClientFilters } from '../components/clients/ClientFilters'
+import { ClientTable } from '../components/clients/ClientTable'
+import { ClientFormModal } from '../components/clients/ClientFormModal'
 
-export function LeadsPage() {
+export function ClientsPage() {
   const { role } = useAuth()
   const canManage = role === 'admin' || role === 'manager'
 
@@ -19,12 +19,12 @@ export function LeadsPage() {
   const debouncedSearch = useDebouncedValue(searchInput)
 
   const status = searchParams.get('status') ?? ''
-  const source = searchParams.get('source') ?? ''
+  const type = searchParams.get('type') ?? ''
   const sort = searchParams.get('sort') ?? 'created_at'
   const order = searchParams.get('order') ?? 'desc'
   const page = Number(searchParams.get('page') ?? '1')
 
-  const [editingLead, setEditingLead] = useState(null)
+  const [editingClient, setEditingClient] = useState(null)
   const [creating, setCreating] = useState(false)
 
   function updateParams(next) {
@@ -46,52 +46,52 @@ export function LeadsPage() {
   const queryParams = {
     search: debouncedSearch || undefined,
     status: status || undefined,
-    source: source || undefined,
+    type: type || undefined,
     sort,
     order,
     page,
   }
 
-  const { data, isLoading, isError, refetch } = useLeads(queryParams)
-  const deleteLead = useDeleteLead()
+  const { data, isLoading, isError, refetch } = useClients(queryParams)
+  const deleteClient = useDeleteClient()
 
-  function handleDelete(lead) {
-    if (window.confirm(`Excluir o lead "${lead.name}"? Esta ação não pode ser desfeita.`)) {
-      deleteLead.mutate(lead.id)
+  function handleDelete(client) {
+    if (window.confirm(`Excluir o cliente "${client.name}"? Esta ação não pode ser desfeita.`)) {
+      deleteClient.mutate(client.id)
     }
   }
 
-  const hasFilters = Boolean(debouncedSearch || status || source)
+  const hasFilters = Boolean(debouncedSearch || status || type)
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-text">Leads</h1>
-        <Button onClick={() => setCreating(true)}>Novo Lead</Button>
+        <h1 className="text-xl font-semibold text-text">Clientes</h1>
+        <Button onClick={() => setCreating(true)}>Novo Cliente</Button>
       </div>
 
       <div className="mb-4">
-        <LeadFilters
+        <ClientFilters
           search={searchInput}
           onSearchChange={(value) => {
             setSearchInput(value)
             updateParams({ search: value || undefined })
           }}
           status={status}
-          source={source}
+          type={type}
           onFilterChange={updateParams}
         />
       </div>
 
-      <LeadTable
-        leads={data?.data ?? []}
+      <ClientTable
+        clients={data?.data ?? []}
         isLoading={isLoading}
         isError={isError}
         onRetry={refetch}
         sort={sort}
         order={order}
         onSortChange={(nextSort, nextOrder) => updateParams({ sort: nextSort, order: nextOrder })}
-        onEdit={setEditingLead}
+        onEdit={setEditingClient}
         onDelete={handleDelete}
         canDelete={canManage}
         hasFilters={hasFilters}
@@ -102,9 +102,9 @@ export function LeadsPage() {
         onPageChange={(nextPage) => updateParams({ page: String(nextPage) })}
       />
 
-      {creating && <LeadFormModal onClose={() => setCreating(false)} />}
-      {editingLead && (
-        <LeadFormModal lead={editingLead} onClose={() => setEditingLead(null)} />
+      {creating && <ClientFormModal onClose={() => setCreating(false)} />}
+      {editingClient && (
+        <ClientFormModal client={editingClient} onClose={() => setEditingClient(null)} />
       )}
     </div>
   )

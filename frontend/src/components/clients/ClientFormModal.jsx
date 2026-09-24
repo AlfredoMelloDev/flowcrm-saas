@@ -5,28 +5,28 @@ import { Select } from '../ui/Select'
 import { Button } from '../ui/Button'
 import { AssigneeSelect } from '../shared/AssigneeSelect'
 import { useAuth } from '../../hooks/useAuth'
-import { useCreateLead } from '../../hooks/useCreateLead'
-import { useUpdateLead } from '../../hooks/useUpdateLead'
-import { STATUS_OPTIONS, SOURCE_OPTIONS } from '../../utils/leadOptions'
+import { useCreateClient } from '../../hooks/useCreateClient'
+import { useUpdateClient } from '../../hooks/useUpdateClient'
+import { STATUS_OPTIONS, TYPE_OPTIONS } from '../../utils/clientOptions'
 import { getFieldError } from '../../utils/apiErrors'
 
-export function LeadFormModal({ lead, onClose }) {
-  const isEditing = Boolean(lead)
+export function ClientFormModal({ client, onClose }) {
+  const isEditing = Boolean(client)
   const { role } = useAuth()
   const canAssign = role === 'admin' || role === 'manager'
 
-  const [name, setName] = useState(lead?.name ?? '')
-  const [email, setEmail] = useState(lead?.email ?? '')
-  const [phone, setPhone] = useState(lead?.phone ?? '')
-  const [source, setSource] = useState(lead?.source ?? '')
-  const [status, setStatus] = useState(lead?.status ?? 'new')
-  const [estimatedValue, setEstimatedValue] = useState(lead?.estimated_value ?? '')
-  const [notes, setNotes] = useState(lead?.notes ?? '')
-  const [userId, setUserId] = useState(lead?.assigned_to?.id ?? '')
+  const [name, setName] = useState(client?.name ?? '')
+  const [email, setEmail] = useState(client?.email ?? '')
+  const [phone, setPhone] = useState(client?.phone ?? '')
+  const [documentNumber, setDocumentNumber] = useState(client?.document ?? '')
+  const [type, setType] = useState(client?.type ?? 'individual')
+  const [status, setStatus] = useState(client?.status ?? 'active')
+  const [notes, setNotes] = useState(client?.notes ?? '')
+  const [userId, setUserId] = useState(client?.assigned_to?.id ?? '')
 
-  const createLead = useCreateLead()
-  const updateLead = useUpdateLead()
-  const mutation = isEditing ? updateLead : createLead
+  const createClient = useCreateClient()
+  const updateClient = useUpdateClient()
+  const mutation = isEditing ? updateClient : createClient
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -35,8 +35,8 @@ export function LeadFormModal({ lead, onClose }) {
       name,
       email: email || null,
       phone: phone || null,
-      source: source || null,
-      estimated_value: estimatedValue === '' ? null : estimatedValue,
+      document: documentNumber || null,
+      type,
       notes: notes || null,
     }
 
@@ -46,20 +46,20 @@ export function LeadFormModal({ lead, onClose }) {
 
     if (isEditing) {
       payload.status = status
-      updateLead.mutate(
-        { id: lead.id, payload },
+      updateClient.mutate(
+        { id: client.id, payload },
         { onSuccess: onClose },
       )
     } else {
-      createLead.mutate(payload, { onSuccess: onClose })
+      createClient.mutate(payload, { onSuccess: onClose })
     }
   }
 
   return (
-    <Modal title={isEditing ? 'Editar lead' : 'Novo lead'} onClose={onClose}>
+    <Modal title={isEditing ? 'Editar cliente' : 'Novo cliente'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <Input
-          id="lead-name"
+          id="client-name"
           label="Nome"
           value={name}
           onChange={(event) => setName(event.target.value)}
@@ -69,7 +69,7 @@ export function LeadFormModal({ lead, onClose }) {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input
-            id="lead-email"
+            id="client-email"
             label="E-mail"
             type="email"
             value={email}
@@ -77,7 +77,7 @@ export function LeadFormModal({ lead, onClose }) {
             error={getFieldError(mutation.error, 'email')}
           />
           <Input
-            id="lead-phone"
+            id="client-phone"
             label="Telefone"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
@@ -87,14 +87,13 @@ export function LeadFormModal({ lead, onClose }) {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
-            id="lead-source"
-            label="Origem"
-            value={source}
-            onChange={(event) => setSource(event.target.value)}
-            error={getFieldError(mutation.error, 'source')}
+            id="client-type"
+            label="Tipo"
+            value={type}
+            onChange={(event) => setType(event.target.value)}
+            error={getFieldError(mutation.error, 'type')}
           >
-            <option value="">Não informada</option>
-            {SOURCE_OPTIONS.map((option) => (
+            {TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -102,20 +101,18 @@ export function LeadFormModal({ lead, onClose }) {
           </Select>
 
           <Input
-            id="lead-estimated-value"
-            label="Valor estimado"
-            type="number"
-            step="0.01"
-            min="0"
-            value={estimatedValue}
-            onChange={(event) => setEstimatedValue(event.target.value)}
-            error={getFieldError(mutation.error, 'estimated_value')}
+            id="client-document"
+            label="Documento"
+            placeholder="CPF ou CNPJ"
+            value={documentNumber}
+            onChange={(event) => setDocumentNumber(event.target.value)}
+            error={getFieldError(mutation.error, 'document')}
           />
         </div>
 
         {isEditing && (
           <Select
-            id="lead-status"
+            id="client-status"
             label="Status"
             value={status}
             onChange={(event) => setStatus(event.target.value)}
@@ -130,7 +127,7 @@ export function LeadFormModal({ lead, onClose }) {
         )}
 
         <AssigneeSelect
-          id="lead-assignee"
+          id="client-assignee"
           value={userId}
           onChange={(event) => setUserId(event.target.value)}
           error={getFieldError(mutation.error, 'user_id')}
@@ -138,11 +135,11 @@ export function LeadFormModal({ lead, onClose }) {
         />
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="lead-notes" className="text-sm font-medium text-text">
+          <label htmlFor="client-notes" className="text-sm font-medium text-text">
             Observações
           </label>
           <textarea
-            id="lead-notes"
+            id="client-notes"
             rows={3}
             value={notes}
             onChange={(event) => setNotes(event.target.value)}

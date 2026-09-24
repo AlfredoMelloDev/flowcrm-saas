@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Middleware\EnsureAccountIsActive;
@@ -27,6 +28,12 @@ Route::prefix('v1')->middleware(['auth:sanctum', SetTenantContext::class, Ensure
     Route::get('leads/{lead}', [LeadController::class, 'show']);
     Route::patch('leads/{lead}', [LeadController::class, 'update']);
     Route::delete('leads/{lead}', [LeadController::class, 'destroy']);
+
+    Route::get('clients', [ClientController::class, 'index']);
+    Route::post('clients', [ClientController::class, 'store']);
+    Route::get('clients/{client}', [ClientController::class, 'show']);
+    Route::patch('clients/{client}', [ClientController::class, 'update']);
+    Route::delete('clients/{client}', [ClientController::class, 'destroy']);
 
     Route::get('users/assignable', [UserController::class, 'assignable']);
 });

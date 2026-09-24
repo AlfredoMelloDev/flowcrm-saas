@@ -7,6 +7,7 @@ import { LoginPage } from '../pages/LoginPage'
 import { RegisterPage } from '../pages/RegisterPage'
 import { DashboardPage } from '../pages/DashboardPage'
 import { LeadsPage } from '../pages/LeadsPage'
+import { ClientsPage } from '../pages/ClientsPage'
 
 export function AppRoutes() {
   return (
@@ -22,6 +23,7 @@ export function AppRoutes() {
         <Route element={<AuthenticatedLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/leads" element={<LeadsPage />} />
+          <Route path="/clients" element={<ClientsPage />} />
         </Route>
       </Route>
 

@@ -1,6 +1,6 @@
-import { Button } from '../ui/Button'
+import { Button } from './Button'
 
-export function LeadPagination({ meta, onPageChange }) {
+export function Pagination({ meta, onPageChange }) {
   if (!meta || meta.last_page <= 1) {
     return null
   }
