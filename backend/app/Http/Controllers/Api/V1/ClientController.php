@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\ClientStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\IndexClientRequest;
 use App\Http\Requests\Client\StoreClientRequest;
 use App\Http\Requests\Client\UpdateClientRequest;
+use App\Http\Resources\ClientOptionResource;
 use App\Http\Resources\ClientResource;
 use App\Models\Client;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ClientController extends Controller
@@ -77,8 +80,33 @@ class ClientController extends Controller
     {
         $this->authorize('delete', $client);
 
+        // Opportunity::client_id is required (not nullable) — deleting a
+        // client that still has non-deleted opportunities would leave them
+        // pointing at a soft-deleted record (the relation resolves to null
+        // for those, per the SoftDeletingScope). exists() already excludes
+        // soft-deleted opportunities on its own, so a client whose only
+        // opportunities were already removed can still be deleted.
+        if ($client->opportunities()->exists()) {
+            return response()->json([
+                'message' => 'Cannot delete a client that still has opportunities.',
+            ], 409);
+        }
+
         $client->delete();
 
         return response()->json(['message' => 'Client deleted successfully.']);
+    }
+
+    public function options(Request $request): AnonymousResourceCollection
+    {
+        $this->authorize('viewAny', Client::class);
+
+        $query = Client::query()->where('status', ClientStatus::Active);
+
+        if ($request->user()->isSeller()) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        return ClientOptionResource::collection($query->orderBy('name')->get());
     }
 }

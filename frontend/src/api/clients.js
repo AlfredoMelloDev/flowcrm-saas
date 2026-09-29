@@ -23,3 +23,8 @@ export async function updateClient({ id, payload }) {
 export async function deleteClient(id) {
   await api.delete(`/api/v1/clients/${id}`)
 }
+
+export async function fetchClientOptions() {
+  const { data } = await api.get('/api/v1/clients/options')
+  return data.data
+}
