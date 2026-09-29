@@ -84,13 +84,17 @@ Policies e Gates do próprio Laravel controlam o que cada papel pode ver e fazer
 - Unicidade de documento por empresa
 - Isolamento multi-tenant
 
-## Em desenvolvimento
-
 ### Opportunities / Pipeline
 
-A próxima etapa adiciona o gerenciamento de oportunidades comerciais e um pipeline visual, com estágios NEW, CONTACTED, PROPOSAL, NEGOTIATION, WON e LOST, associação com clientes, valores e previsão de fechamento.
-
-🚧 Esta funcionalidade está em desenvolvimento e ainda não faz parte da versão estável do projeto.
+- Pipeline visual com 6 estágios: NEW, CONTACTED, PROPOSAL, NEGOTIATION, WON e LOST
+- Criação, edição e exclusão de oportunidades
+- Associação com clientes
+- Responsável
+- Valor
+- Previsão de fechamento
+- Busca e filtro por responsável
+- Controle de acesso por papel
+- Tratamento de WON/LOST, com motivo obrigatório ao marcar como LOST
 
 ## Arquitetura
 
@@ -129,12 +133,12 @@ Essas camadas reduzem riscos conhecidos de vazamento de dados entre empresas, ma
 
 ## Testes
 
-Números da última fase estável publicada (Autenticação, Multi-tenancy, Leads e Clientes):
+Números da última fase estável publicada (Autenticação, Multi-tenancy, Leads, Clientes e Opportunities/Pipeline):
 
-**Backend:** 130 testes, 360 assertions
-**Frontend:** 26 testes
+**Backend:** 208 testes, 570 assertions
+**Frontend:** 57 testes
 
-Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads e Clientes.
+Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes e Opportunities.
 
 ## IA no desenvolvimento
 
@@ -156,7 +160,7 @@ Decisões arquiteturais, revisão das alterações propostas, execução dos tes
 - [x] Autenticação e Multi-tenancy
 - [x] Leads
 - [x] Clients
-- [ ] Opportunities / Pipeline
+- [x] Opportunities / Pipeline
 - [ ] Conversão Lead → Client + Opportunity
 - [ ] Propostas
 - [ ] Produtos e Serviços
@@ -219,8 +223,7 @@ npm run build
 
 🚧 Em desenvolvimento ativo.
 
-Fases 0–3 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads e Clientes).
-Fase 4 — Opportunities/Pipeline em desenvolvimento.
+Fases 0–4 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes e Opportunities/Pipeline).
 
 ## Autor
 
