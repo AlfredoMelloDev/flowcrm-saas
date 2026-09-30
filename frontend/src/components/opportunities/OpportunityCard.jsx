@@ -4,7 +4,7 @@ import { Select } from '../ui/Select'
 import { LostReasonModal } from './LostReasonModal'
 import { useUpdateOpportunityStage } from '../../hooks/useUpdateOpportunityStage'
 import { STAGE_OPTIONS } from '../../utils/opportunityOptions'
-import { formatCurrency, formatDate } from '../../utils/formatters'
+import { formatCurrency, formatDateOnly } from '../../utils/formatters'
 
 export function OpportunityCard({ opportunity, onEdit, onDelete, canDelete }) {
   const updateStage = useUpdateOpportunityStage()
@@ -43,7 +43,7 @@ export function OpportunityCard({ opportunity, onEdit, onDelete, canDelete }) {
         {opportunity.expected_close_date && (
           <>
             <dt className="text-muted">Previsão</dt>
-            <dd className="text-text">{formatDate(opportunity.expected_close_date)}</dd>
+            <dd className="text-text">{formatDateOnly(opportunity.expected_close_date)}</dd>
           </>
         )}
       </dl>
