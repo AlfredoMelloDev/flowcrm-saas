@@ -3,6 +3,7 @@
 namespace Tests\Feature\Dashboard;
 
 use App\Enums\UserRole;
+use App\Models\Activity;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Lead;
@@ -239,5 +240,82 @@ class DashboardMetricsTest extends TestCase
         $ids = collect($response->json('data.recent_leads'))->pluck('id');
         $this->assertCount(5, $ids);
         $this->assertSame(array_slice($expectedOrder, 0, 5), $ids->all());
+    }
+
+    public function test_activities_today_counts_pending_activities_scheduled_today_only(): void
+    {
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'pending',
+            'scheduled_at' => now()->startOfDay()->addHours(9),
+        ]);
+        // Scheduled today but already completed — must not count.
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'completed',
+            'scheduled_at' => now()->startOfDay()->addHours(10), 'completed_at' => now(),
+        ]);
+        // Pending but not today — must not count.
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'pending',
+            'scheduled_at' => now()->addDays(2),
+        ]);
+
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/dashboard');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.activities_today', 1);
+    }
+
+    public function test_activities_overdue_counts_only_pending_activities_in_the_past(): void
+    {
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'pending', 'scheduled_at' => now()->subHour(),
+        ]);
+        // Completed but scheduled in the past — must not count as overdue.
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'completed',
+            'scheduled_at' => now()->subDay(), 'completed_at' => now(),
+        ]);
+        // Pending but in the future — must not count as overdue.
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'pending', 'scheduled_at' => now()->addDay(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/dashboard');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.activities_overdue', 1);
+    }
+
+    public function test_upcoming_activities_excludes_completed_and_overdue_limited_to_five_ordered_ascending(): void
+    {
+        $expected = [];
+        for ($i = 1; $i <= 7; $i++) {
+            $expected[] = Activity::factory()->create([
+                'user_id' => $this->admin->id, 'status' => 'pending', 'scheduled_at' => now()->addDays($i),
+            ])->id;
+        }
+        // Overdue — must be excluded from "upcoming".
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'pending', 'scheduled_at' => now()->subDay(),
+        ]);
+        // Completed but in the future — must be excluded too.
+        Activity::factory()->create([
+            'user_id' => $this->admin->id, 'status' => 'completed',
+            'scheduled_at' => now()->addHours(1), 'completed_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/dashboard');
+
+        $response->assertOk();
+        $ids = collect($response->json('data.upcoming_activities'))->pluck('id');
+        $this->assertCount(5, $ids);
+        $this->assertSame(array_slice($expected, 0, 5), $ids->all());
+        $this->assertSame(
+            ['id', 'title', 'type', 'assigned_to', 'scheduled_at'],
+            array_intersect(
+                ['id', 'title', 'type', 'assigned_to', 'scheduled_at'],
+                array_keys($response->json('data.upcoming_activities.0'))
+            )
+        );
     }
 }

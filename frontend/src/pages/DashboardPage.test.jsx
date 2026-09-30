@@ -42,6 +42,17 @@ const summary = {
       created_at: '2026-01-01T00:00:00Z',
     },
   ],
+  activities_today: 7,
+  activities_overdue: 6,
+  upcoming_activities: [
+    {
+      id: 'a1',
+      title: 'Follow-up call',
+      type: 'call',
+      scheduled_at: '2026-10-05T14:30:00.000000Z',
+      assigned_to: { id: 'u1', name: 'Bob' },
+    },
+  ],
 }
 
 describe('DashboardPage', () => {
@@ -90,6 +101,9 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Pipeline por estágio')).toBeInTheDocument()
     expect(screen.getByText('Renewal Deal')).toBeInTheDocument()
     expect(screen.getByText('Jane Prospect')).toBeInTheDocument()
+    expect(screen.getByText('Atividades hoje')).toBeInTheDocument()
+    expect(screen.getByText('Atividades atrasadas')).toBeInTheDocument()
+    expect(screen.getByText('Follow-up call')).toBeInTheDocument()
   })
 
   it('never touches localStorage or sessionStorage', async () => {

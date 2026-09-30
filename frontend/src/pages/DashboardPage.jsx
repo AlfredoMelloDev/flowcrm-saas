@@ -6,6 +6,7 @@ import { MetricCard } from '../components/dashboard/MetricCard'
 import { PipelineByStageSummary } from '../components/dashboard/PipelineByStageSummary'
 import { ClosingSoonList } from '../components/dashboard/ClosingSoonList'
 import { RecentLeadsList } from '../components/dashboard/RecentLeadsList'
+import { UpcomingActivitiesList } from '../components/dashboard/UpcomingActivitiesList'
 import { formatCurrency } from '../utils/formatters'
 
 export function DashboardPage() {
@@ -41,6 +42,8 @@ export function DashboardPage() {
             <MetricCard label="Oportunidades ganhas" value={data.opportunities_won} />
             <MetricCard label="Oportunidades perdidas" value={data.opportunities_lost} />
             <MetricCard label="Taxa de conversão de leads" value={`${data.lead_conversion_rate}%`} />
+            <MetricCard label="Atividades hoje" value={data.activities_today} />
+            <MetricCard label="Atividades atrasadas" value={data.activities_overdue} />
           </div>
 
           <PipelineByStageSummary stages={data.pipeline_by_stage} />
@@ -49,6 +52,8 @@ export function DashboardPage() {
             <ClosingSoonList opportunities={data.closing_soon} />
             <RecentLeadsList leads={data.recent_leads} />
           </div>
+
+          <UpcomingActivitiesList activities={data.upcoming_activities} />
         </div>
       )}
     </div>

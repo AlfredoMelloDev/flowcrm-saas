@@ -3,6 +3,7 @@
 namespace Tests\Feature\Dashboard;
 
 use App\Enums\UserRole;
+use App\Models\Activity;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Lead;
@@ -106,5 +107,58 @@ class DashboardAuthorizationTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('data.leads_active', 5);
+    }
+
+    public function test_admin_and_manager_see_company_wide_activities_metrics(): void
+    {
+        Activity::factory()->create([
+            'user_id' => $this->seller1->id, 'status' => 'pending', 'scheduled_at' => now()->subHour(),
+        ]);
+        Activity::factory()->create([
+            'user_id' => $this->seller2->id, 'status' => 'pending', 'scheduled_at' => now()->subHour(),
+        ]);
+
+        $this->actingAs($this->admin)->getJson('/api/v1/dashboard')
+            ->assertJsonPath('data.activities_overdue', 2);
+        $this->actingAs($this->manager)->getJson('/api/v1/dashboard')
+            ->assertJsonPath('data.activities_overdue', 2);
+    }
+
+    public function test_seller_sees_only_their_own_activities_metrics(): void
+    {
+        Activity::factory()->create([
+            'user_id' => $this->seller1->id, 'status' => 'pending', 'scheduled_at' => now()->subHour(),
+        ]);
+        Activity::factory()->create([
+            'user_id' => $this->seller2->id, 'status' => 'pending', 'scheduled_at' => now()->subHour(),
+        ]);
+        Activity::factory()->create([
+            'user_id' => $this->seller1->id, 'status' => 'pending', 'scheduled_at' => now()->addDay(),
+        ]);
+        Activity::factory()->create([
+            'user_id' => $this->seller2->id, 'status' => 'pending', 'scheduled_at' => now()->addDay(),
+        ]);
+
+        $response = $this->actingAs($this->seller1)->getJson('/api/v1/dashboard');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.activities_overdue', 1);
+        $upcomingAssignees = collect($response->json('data.upcoming_activities'))->pluck('assigned_to.id');
+        $this->assertTrue($upcomingAssignees->every(fn ($id) => $id === $this->seller1->id));
+    }
+
+    public function test_tenant_isolation_activities_metrics_do_not_leak_across_companies(): void
+    {
+        $otherCompany = Company::factory()->create();
+        $otherAdmin = User::factory()->for($otherCompany)->create(['role' => UserRole::Admin]);
+        $this->setTenantContext($otherCompany);
+        Activity::factory()->count(3)->create([
+            'user_id' => $otherAdmin->id, 'status' => 'pending', 'scheduled_at' => now()->subHour(),
+        ]);
+
+        $response = $this->actingAs($otherAdmin)->getJson('/api/v1/dashboard');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.activities_overdue', 3);
     }
 }

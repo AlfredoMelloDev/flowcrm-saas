@@ -2,11 +2,14 @@
 
 namespace App\Actions\Dashboard;
 
+use App\Enums\ActivityStatus;
 use App\Enums\ClientStatus;
 use App\Enums\LeadStatus;
 use App\Enums\OpportunityStage;
+use App\Http\Resources\ActivityResource;
 use App\Http\Resources\LeadResource;
 use App\Http\Resources\OpportunityResource;
+use App\Models\Activity;
 use App\Models\Client;
 use App\Models\Lead;
 use App\Models\Opportunity;
@@ -76,6 +79,9 @@ class BuildDashboardSummary
                 ->all(),
             'closing_soon' => OpportunityResource::collection($this->closingSoon($user))->resolve(),
             'recent_leads' => LeadResource::collection($this->recentLeads($user))->resolve(),
+            'activities_today' => $this->activitiesTodayCount($user),
+            'activities_overdue' => $this->activitiesOverdueCount($user),
+            'upcoming_activities' => ActivityResource::collection($this->upcomingActivities($user))->resolve(),
         ];
     }
 
@@ -201,6 +207,41 @@ class BuildDashboardSummary
             ->orderByDesc('created_at')
             ->limit(self::LIST_LIMIT)
             ->with('user')
+            ->get();
+    }
+
+    private function activitiesTodayCount(User $user): int
+    {
+        return Activity::query()
+            ->when($user->isSeller(), fn ($query) => $query->where('user_id', $user->id))
+            ->where('status', ActivityStatus::Pending)
+            ->whereBetween('scheduled_at', [Carbon::now()->startOfDay(), Carbon::now()->endOfDay()])
+            ->count();
+    }
+
+    private function activitiesOverdueCount(User $user): int
+    {
+        return Activity::query()
+            ->when($user->isSeller(), fn ($query) => $query->where('user_id', $user->id))
+            ->where('status', ActivityStatus::Pending)
+            ->where('scheduled_at', '<', Carbon::now())
+            ->count();
+    }
+
+    /**
+     * Strictly future (scheduled_at > now), distinct from "atrasadas" above —
+     * same semantics as ActivityController::applyWindow's "upcoming", kept
+     * consistent rather than redefined here.
+     */
+    private function upcomingActivities(User $user)
+    {
+        return Activity::query()
+            ->when($user->isSeller(), fn ($query) => $query->where('user_id', $user->id))
+            ->where('status', ActivityStatus::Pending)
+            ->where('scheduled_at', '>', Carbon::now())
+            ->orderBy('scheduled_at')
+            ->limit(self::LIST_LIMIT)
+            ->with(['user', 'lead', 'client', 'opportunity'])
             ->get();
     }
 }
