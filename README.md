@@ -96,6 +96,33 @@ Policies e Gates do próprio Laravel controlam o que cada papel pode ver e fazer
 - Controle de acesso por papel
 - Tratamento de WON/LOST, com motivo obrigatório ao marcar como LOST
 
+### Conversão de Leads
+
+- Conversão de um Lead em Client + Opportunity com um clique
+- Criação dos registros dentro de uma única transação (tudo ou nada)
+- Lead convertido passa para o status `converted`
+- Registro de rastreabilidade de cada conversão (quem converteu, quando, e quais registros nasceram dela)
+- Proteção contra conversão duplicada do mesmo Lead
+- Lead convertido não pode voltar para outro status
+- Lead convertido não pode ser excluído
+- Valor estimado do Lead pode ser aproveitado como valor inicial da Opportunity
+- Controle de acesso por papel aplicado também à conversão
+- Isolamento multi-tenant preservado em todos os registros criados
+
+Fluxo comercial resultante:
+
+```
+Lead
+  ↓
+Conversão
+  ↓
+Client + Opportunity
+  ↓
+Pipeline
+  ↓
+WON / LOST
+```
+
 ## Arquitetura
 
 Estrutura simplificada do repositório:
@@ -128,17 +155,18 @@ Backend e frontend são desacoplados: o backend expõe uma API REST versionada (
 - Autorização de ações via Policies/Gates do Laravel
 - Validação de atribuições (responsável) restrita a usuários da mesma empresa
 - Autenticação via Laravel Sanctum (cookie de sessão, não token exposto ao JavaScript)
+- Conversão de Lead executada dentro de uma transação de banco, com proteção contra conversão duplicada (inclusive sob concorrência) e autorização por papel/ownership do Lead
 
 Essas camadas reduzem riscos conhecidos de vazamento de dados entre empresas, mas nenhum sistema é absolutamente livre de falhas — por isso a cobertura de testes de isolamento é tratada como parte central do desenvolvimento.
 
 ## Testes
 
-Números da última fase estável publicada (Autenticação, Multi-tenancy, Leads, Clientes e Opportunities/Pipeline):
+Números da última versão estável (Autenticação, Multi-tenancy, Leads, Clientes, Opportunities/Pipeline e Conversão de Leads):
 
-**Backend:** 208 testes, 570 assertions
-**Frontend:** 57 testes
+**Backend:** 239 testes, 664 assertions
+**Frontend:** 71 testes
 
-Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes e Opportunities.
+Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes, Opportunities e da conversão de Leads.
 
 ## IA no desenvolvimento
 
@@ -161,7 +189,7 @@ Decisões arquiteturais, revisão das alterações propostas, execução dos tes
 - [x] Leads
 - [x] Clients
 - [x] Opportunities / Pipeline
-- [ ] Conversão Lead → Client + Opportunity
+- [x] Conversão Lead → Client + Opportunity
 - [ ] Propostas
 - [ ] Produtos e Serviços
 - [ ] Tarefas e Atividades
@@ -223,7 +251,7 @@ npm run build
 
 🚧 Em desenvolvimento ativo.
 
-Fases 0–4 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes e Opportunities/Pipeline).
+Fases 0–5 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline e Conversão de Leads).
 
 ## Autor
 
