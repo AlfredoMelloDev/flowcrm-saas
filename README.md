@@ -123,6 +123,19 @@ Pipeline
 WON / LOST
 ```
 
+### Dashboard
+
+- Leads ativos
+- Clientes ativos
+- Oportunidades abertas
+- Valor total do pipeline
+- Oportunidades ganhas e perdidas
+- Taxa de conversão de Leads
+- Resumo do pipeline por estágio
+- Oportunidades com fechamento próximo
+- Leads recentes
+- Escopo por papel: ADMIN e MANAGER visualizam os dados da empresa inteira; SELLER visualiza somente os próprios registros
+
 ## Arquitetura
 
 Estrutura simplificada do repositório:
@@ -161,12 +174,12 @@ Essas camadas reduzem riscos conhecidos de vazamento de dados entre empresas, ma
 
 ## Testes
 
-Números da última versão estável (Autenticação, Multi-tenancy, Leads, Clientes, Opportunities/Pipeline e Conversão de Leads):
+Números da última versão estável (Autenticação, Multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads e Dashboard):
 
-**Backend:** 239 testes, 664 assertions
-**Frontend:** 71 testes
+**Backend:** 257 testes, 733 assertions
+**Frontend:** 86 testes
 
-Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes, Opportunities e da conversão de Leads.
+Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes, Opportunities, da conversão de Leads e do Dashboard.
 
 ## IA no desenvolvimento
 
@@ -190,11 +203,12 @@ Decisões arquiteturais, revisão das alterações propostas, execução dos tes
 - [x] Clients
 - [x] Opportunities / Pipeline
 - [x] Conversão Lead → Client + Opportunity
+- [x] Dashboard
 - [ ] Propostas
 - [ ] Produtos e Serviços
 - [ ] Tarefas e Atividades
 - [ ] Anexos
-- [ ] Dashboard e Relatórios
+- [ ] Relatórios avançados
 - [ ] Docker / Docker Compose
 - [ ] Deploy AWS (EC2, RDS, S3, CloudWatch)
 
@@ -251,7 +265,7 @@ npm run build
 
 🚧 Em desenvolvimento ativo.
 
-Fases 0–5 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline e Conversão de Leads).
+Fases 0–6 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads e Dashboard).
 
 ## Autor
 
