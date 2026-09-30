@@ -136,6 +136,15 @@ WON / LOST
 - Leads recentes
 - Escopo por papel: ADMIN e MANAGER visualizam os dados da empresa inteira; SELLER visualiza somente os próprios registros
 
+### Activities / Follow-ups
+
+- Tipos: ligação, e-mail, reunião, tarefa e follow-up
+- Status pendente/concluída, com identificação automática de atividades atrasadas (derivada no backend, nunca persistida)
+- Relacionamento opcional com Lead, Client ou Opportunity (no máximo um por atividade, validado em duas camadas: FormRequest e constraint no banco)
+- Responsável obrigatório, com controle de acesso por papel (ADMIN/MANAGER atribuem a qualquer usuário ativo da empresa; SELLER sempre responsável pela própria atividade)
+- Ações de concluir e reabrir, com `completed_at` controlado pelo backend
+- Isolamento multi-tenant e soft delete
+
 ## Arquitetura
 
 Estrutura simplificada do repositório:
@@ -174,12 +183,12 @@ Essas camadas reduzem riscos conhecidos de vazamento de dados entre empresas, ma
 
 ## Testes
 
-Números da última versão estável (Autenticação, Multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads e Dashboard):
+Números da última versão estável (Autenticação, Multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard e Activities/Follow-ups):
 
-**Backend:** 257 testes, 733 assertions
-**Frontend:** 86 testes
+**Backend:** 326 testes, 907 assertions
+**Frontend:** 124 testes
 
-Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes, Opportunities, da conversão de Leads e do Dashboard.
+Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes, Opportunities, da conversão de Leads, do Dashboard e das Activities/Follow-ups.
 
 ## IA no desenvolvimento
 
@@ -204,9 +213,9 @@ Decisões arquiteturais, revisão das alterações propostas, execução dos tes
 - [x] Opportunities / Pipeline
 - [x] Conversão Lead → Client + Opportunity
 - [x] Dashboard
+- [x] Activities / Follow-ups
 - [ ] Propostas
 - [ ] Produtos e Serviços
-- [ ] Tarefas e Atividades
 - [ ] Anexos
 - [ ] Relatórios avançados
 - [ ] Docker / Docker Compose
@@ -265,7 +274,7 @@ npm run build
 
 🚧 Em desenvolvimento ativo.
 
-Fases 0–6 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads e Dashboard).
+Fases 0–7 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard e Activities/Follow-ups).
 
 ## Autor
 
