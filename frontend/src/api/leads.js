@@ -23,3 +23,8 @@ export async function updateLead({ id, payload }) {
 export async function deleteLead(id) {
   await api.delete(`/api/v1/leads/${id}`)
 }
+
+export async function convertLead({ id, payload }) {
+  const { data } = await api.post(`/api/v1/leads/${id}/convert`, payload)
+  return data.data
+}

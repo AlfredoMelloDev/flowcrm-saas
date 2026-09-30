@@ -29,6 +29,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', SetTenantContext::class, Ensure
     Route::get('leads/{lead}', [LeadController::class, 'show']);
     Route::patch('leads/{lead}', [LeadController::class, 'update']);
     Route::delete('leads/{lead}', [LeadController::class, 'destroy']);
+    Route::post('leads/{lead}/convert', [LeadController::class, 'convert']);
 
     Route::get('clients', [ClientController::class, 'index']);
     Route::post('clients', [ClientController::class, 'store']);

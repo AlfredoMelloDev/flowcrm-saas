@@ -27,7 +27,9 @@ export function LeadTable({
   onSortChange,
   onEdit,
   onDelete,
+  onConvert,
   canDelete,
+  canConvert,
   hasFilters,
 }) {
   if (isLoading) {
@@ -106,6 +108,11 @@ export function LeadTable({
                 <td className="px-4 py-3 text-muted">{formatDate(lead.created_at)}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
+                    {canConvert?.(lead) && (
+                      <Button variant="ghost" onClick={() => onConvert(lead)}>
+                        Converter
+                      </Button>
+                    )}
                     <Button variant="ghost" onClick={() => onEdit(lead)}>
                       Editar
                     </Button>
@@ -144,6 +151,11 @@ export function LeadTable({
               <dd className="text-text">{formatCurrency(lead.estimated_value)}</dd>
             </dl>
             <div className="mt-3 flex justify-end gap-2">
+              {canConvert?.(lead) && (
+                <Button variant="ghost" onClick={() => onConvert(lead)}>
+                  Converter
+                </Button>
+              )}
               <Button variant="ghost" onClick={() => onEdit(lead)}>
                 Editar
               </Button>

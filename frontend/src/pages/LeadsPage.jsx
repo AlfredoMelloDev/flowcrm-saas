@@ -9,10 +9,18 @@ import { Pagination } from '../components/ui/Pagination'
 import { LeadFilters } from '../components/leads/LeadFilters'
 import { LeadTable } from '../components/leads/LeadTable'
 import { LeadFormModal } from '../components/leads/LeadFormModal'
+import { ConvertLeadModal } from '../components/leads/ConvertLeadModal'
 
 export function LeadsPage() {
-  const { role } = useAuth()
+  const { role, user } = useAuth()
   const canManage = role === 'admin' || role === 'manager'
+
+  function canConvertLead(lead) {
+    if (lead.status === 'converted') {
+      return false
+    }
+    return canManage || lead.assigned_to?.id === user?.id
+  }
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchInput, setSearchInput] = useState(searchParams.get('search') ?? '')
@@ -26,6 +34,7 @@ export function LeadsPage() {
 
   const [editingLead, setEditingLead] = useState(null)
   const [creating, setCreating] = useState(false)
+  const [convertingLead, setConvertingLead] = useState(null)
 
   function updateParams(next) {
     const params = new URLSearchParams(searchParams)
@@ -93,7 +102,9 @@ export function LeadsPage() {
         onSortChange={(nextSort, nextOrder) => updateParams({ sort: nextSort, order: nextOrder })}
         onEdit={setEditingLead}
         onDelete={handleDelete}
+        onConvert={setConvertingLead}
         canDelete={canManage}
+        canConvert={canConvertLead}
         hasFilters={hasFilters}
       />
 
@@ -105,6 +116,9 @@ export function LeadsPage() {
       {creating && <LeadFormModal onClose={() => setCreating(false)} />}
       {editingLead && (
         <LeadFormModal lead={editingLead} onClose={() => setEditingLead(null)} />
+      )}
+      {convertingLead && (
+        <ConvertLeadModal lead={convertingLead} onClose={() => setConvertingLead(null)} />
       )}
     </div>
   )

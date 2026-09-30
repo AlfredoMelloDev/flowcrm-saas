@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\Leads\ConvertLead;
+use App\Enums\LeadStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Lead\ConvertLeadRequest;
 use App\Http\Requests\Lead\IndexLeadRequest;
 use App\Http\Requests\Lead\StoreLeadRequest;
 use App\Http\Requests\Lead\UpdateLeadRequest;
+use App\Http\Resources\ClientResource;
 use App\Http\Resources\LeadResource;
+use App\Http\Resources\OpportunityResource;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -76,8 +81,28 @@ class LeadController extends Controller
     {
         $this->authorize('delete', $lead);
 
+        if ($lead->status === LeadStatus::Converted) {
+            return response()->json([
+                'message' => 'Cannot delete a lead that has already been converted.',
+            ], 409);
+        }
+
         $lead->delete();
 
         return response()->json(['message' => 'Lead deleted successfully.']);
+    }
+
+    public function convert(ConvertLeadRequest $request, Lead $lead, ConvertLead $convertLead): JsonResponse
+    {
+        $result = $convertLead->handle($lead, $request->validated(), $request->user());
+
+        return response()->json([
+            'data' => [
+                'lead' => new LeadResource($result['lead']->load('user')),
+                'client' => new ClientResource($result['client']->load('user')),
+                'opportunity' => new OpportunityResource($result['opportunity']->load(['client', 'user'])),
+            ],
+            'message' => 'Lead converted successfully.',
+        ], 201);
     }
 }

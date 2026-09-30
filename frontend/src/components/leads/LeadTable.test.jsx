@@ -54,4 +54,65 @@ describe('LeadTable', () => {
     expect(screen.getAllByText('Jane Prospect').length).toBeGreaterThan(0)
     expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeInTheDocument()
   })
+
+  it('shows Converter when canConvert allows it, and calls onConvert', async () => {
+    const leads = [
+      {
+        id: 'l1',
+        name: 'Jane Prospect',
+        email: null,
+        phone: null,
+        status: 'new',
+        source: null,
+        estimated_value: null,
+        assigned_to: null,
+        created_at: '2026-01-01T00:00:00Z',
+      },
+    ]
+    const onConvert = vi.fn()
+
+    render(
+      <LeadTable
+        {...baseProps}
+        leads={leads}
+        isLoading={false}
+        isError={false}
+        onConvert={onConvert}
+        canConvert={() => true}
+      />,
+    )
+
+    const buttons = screen.getAllByRole('button', { name: 'Converter' })
+    buttons[0].click()
+    expect(onConvert).toHaveBeenCalledWith(leads[0])
+  })
+
+  it('hides Converter when canConvert returns false for that lead', () => {
+    const leads = [
+      {
+        id: 'l1',
+        name: 'Jane Prospect',
+        email: null,
+        phone: null,
+        status: 'converted',
+        source: null,
+        estimated_value: null,
+        assigned_to: null,
+        created_at: '2026-01-01T00:00:00Z',
+      },
+    ]
+
+    render(
+      <LeadTable
+        {...baseProps}
+        leads={leads}
+        isLoading={false}
+        isError={false}
+        onConvert={vi.fn()}
+        canConvert={(lead) => lead.status !== 'converted'}
+      />,
+    )
+
+    expect(screen.queryByRole('button', { name: 'Converter' })).not.toBeInTheDocument()
+  })
 })

@@ -7,11 +7,12 @@ import { AssigneeSelect } from '../shared/AssigneeSelect'
 import { useAuth } from '../../hooks/useAuth'
 import { useCreateLead } from '../../hooks/useCreateLead'
 import { useUpdateLead } from '../../hooks/useUpdateLead'
-import { STATUS_OPTIONS, SOURCE_OPTIONS } from '../../utils/leadOptions'
+import { EDITABLE_STATUS_OPTIONS, SOURCE_OPTIONS } from '../../utils/leadOptions'
 import { getFieldError } from '../../utils/apiErrors'
 
 export function LeadFormModal({ lead, onClose }) {
   const isEditing = Boolean(lead)
+  const isConverted = lead?.status === 'converted'
   const { role } = useAuth()
   const canAssign = role === 'admin' || role === 'manager'
 
@@ -45,7 +46,11 @@ export function LeadFormModal({ lead, onClose }) {
     }
 
     if (isEditing) {
-      payload.status = status
+      // A converted lead's status is immutable — the backend rejects any
+      // attempt to change it, so it's simply never sent here.
+      if (!isConverted) {
+        payload.status = status
+      }
       updateLead.mutate(
         { id: lead.id, payload },
         { onSuccess: onClose },
@@ -113,7 +118,13 @@ export function LeadFormModal({ lead, onClose }) {
           />
         </div>
 
-        {isEditing && (
+        {isEditing && isConverted && (
+          <p className="text-sm text-muted">
+            Status: Convertido — não pode ser alterado.
+          </p>
+        )}
+
+        {isEditing && !isConverted && (
           <Select
             id="lead-status"
             label="Status"
@@ -121,7 +132,7 @@ export function LeadFormModal({ lead, onClose }) {
             onChange={(event) => setStatus(event.target.value)}
             error={getFieldError(mutation.error, 'status')}
           >
-            {STATUS_OPTIONS.map((option) => (
+            {EDITABLE_STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

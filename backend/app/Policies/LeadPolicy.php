@@ -40,4 +40,13 @@ class LeadPolicy
     {
         return $user->hasAnyRole(UserRole::Admin, UserRole::Manager);
     }
+
+    public function convert(User $user, Lead $lead): bool
+    {
+        if ($user->hasAnyRole(UserRole::Admin, UserRole::Manager)) {
+            return true;
+        }
+
+        return $lead->user_id === $user->id;
+    }
 }

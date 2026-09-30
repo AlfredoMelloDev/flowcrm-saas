@@ -20,6 +20,12 @@ export const SOURCE_OPTIONS = [
   { value: 'other', label: 'Outro' },
 ]
 
+// A Lead only ever reaches "converted" through POST /leads/{lead}/convert —
+// the plain status <Select> on the edit form must never offer it as a
+// manual target (the backend rejects it anyway, but the UI shouldn't imply
+// it's a normal option in the first place).
+export const EDITABLE_STATUS_OPTIONS = STATUS_OPTIONS.filter((option) => option.value !== 'converted')
+
 export const STATUS_TONE = {
   new: 'info',
   contacted: 'primary',
