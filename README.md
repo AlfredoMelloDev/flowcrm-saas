@@ -134,6 +134,9 @@ WON / LOST
 - Resumo do pipeline por estágio
 - Oportunidades com fechamento próximo
 - Leads recentes
+- Atividades de hoje
+- Atividades atrasadas
+- Próximas 5 atividades
 - Escopo por papel: ADMIN e MANAGER visualizam os dados da empresa inteira; SELLER visualiza somente os próprios registros
 
 ### Activities / Follow-ups
@@ -185,8 +188,8 @@ Essas camadas reduzem riscos conhecidos de vazamento de dados entre empresas, ma
 
 Números da última versão estável (Autenticação, Multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard e Activities/Follow-ups):
 
-**Backend:** 326 testes, 907 assertions
-**Frontend:** 124 testes
+**Backend:** 332 testes, 922 assertions
+**Frontend:** 126 testes
 
 Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes, Opportunities, da conversão de Leads, do Dashboard e das Activities/Follow-ups.
 
@@ -213,7 +216,7 @@ Decisões arquiteturais, revisão das alterações propostas, execução dos tes
 - [x] Opportunities / Pipeline
 - [x] Conversão Lead → Client + Opportunity
 - [x] Dashboard
-- [x] Activities / Follow-ups
+- [x] Activities / Follow-ups (com integração ao Dashboard)
 - [ ] Propostas
 - [ ] Produtos e Serviços
 - [ ] Anexos
@@ -274,7 +277,7 @@ npm run build
 
 🚧 Em desenvolvimento ativo.
 
-Fases 0–7 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard e Activities/Follow-ups).
+Fases 0–7 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard e Activities/Follow-ups, já com Activities integradas ao Dashboard).
 
 ## Autor
 
