@@ -35,3 +35,15 @@ export function formatDateOnly(value) {
   }
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeZone: 'UTC' }).format(new Date(value))
 }
+
+// For real timestamps where the time of day matters to the reader
+// (scheduled_at/completed_at on an Activity — "9am" vs "5pm" is real
+// information) — same local-timezone behavior as formatDate, just also
+// showing the time component. Never pin this to UTC: these are moments in
+// time, not calendar-only values.
+export function formatDateTime(value) {
+  if (!value) {
+    return '—'
+  }
+  return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value))
+}

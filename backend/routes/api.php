@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\DashboardController;
@@ -29,6 +30,9 @@ Route::prefix('v1')->middleware(['auth:sanctum', SetTenantContext::class, Ensure
 
     Route::get('leads', [LeadController::class, 'index']);
     Route::post('leads', [LeadController::class, 'store']);
+    // Must be registered before leads/{lead} — otherwise "options" would be
+    // captured as the {lead} route parameter.
+    Route::get('leads/options', [LeadController::class, 'options']);
     Route::get('leads/{lead}', [LeadController::class, 'show']);
     Route::patch('leads/{lead}', [LeadController::class, 'update']);
     Route::delete('leads/{lead}', [LeadController::class, 'destroy']);
@@ -45,11 +49,21 @@ Route::prefix('v1')->middleware(['auth:sanctum', SetTenantContext::class, Ensure
 
     Route::get('opportunities', [OpportunityController::class, 'index']);
     Route::post('opportunities', [OpportunityController::class, 'store']);
-    // Same reasoning as clients/options above — pipeline before {opportunity}.
+    // Same reasoning as clients/options above — pipeline/options before
+    // {opportunity}.
     Route::get('opportunities/pipeline', [OpportunityController::class, 'pipeline']);
+    Route::get('opportunities/options', [OpportunityController::class, 'options']);
     Route::get('opportunities/{opportunity}', [OpportunityController::class, 'show']);
     Route::patch('opportunities/{opportunity}', [OpportunityController::class, 'update']);
     Route::delete('opportunities/{opportunity}', [OpportunityController::class, 'destroy']);
+
+    Route::get('activities', [ActivityController::class, 'index']);
+    Route::post('activities', [ActivityController::class, 'store']);
+    Route::get('activities/{activity}', [ActivityController::class, 'show']);
+    Route::patch('activities/{activity}', [ActivityController::class, 'update']);
+    Route::delete('activities/{activity}', [ActivityController::class, 'destroy']);
+    Route::patch('activities/{activity}/complete', [ActivityController::class, 'complete']);
+    Route::patch('activities/{activity}/reopen', [ActivityController::class, 'reopen']);
 
     Route::get('users/assignable', [UserController::class, 'assignable']);
 });

@@ -8,11 +8,13 @@ use App\Http\Requests\Opportunity\IndexOpportunityRequest;
 use App\Http\Requests\Opportunity\PipelineOpportunityRequest;
 use App\Http\Requests\Opportunity\StoreOpportunityRequest;
 use App\Http\Requests\Opportunity\UpdateOpportunityRequest;
+use App\Http\Resources\OpportunityOptionResource;
 use App\Http\Resources\OpportunityResource;
 use App\Models\Opportunity;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OpportunityController extends Controller
@@ -93,6 +95,17 @@ class OpportunityController extends Controller
         $opportunity->delete();
 
         return response()->json(['message' => 'Opportunity deleted successfully.']);
+    }
+
+    public function options(Request $request): AnonymousResourceCollection
+    {
+        $this->authorize('viewAny', Opportunity::class);
+
+        $query = Opportunity::query();
+
+        $this->scopeToOwnership($query, $request->user());
+
+        return OpportunityOptionResource::collection($query->orderBy('title')->get());
     }
 
     private function scopeToOwnership(Builder $query, User $user): void

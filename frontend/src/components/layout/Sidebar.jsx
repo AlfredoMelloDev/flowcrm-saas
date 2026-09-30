@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { to: '/leads', label: 'Leads' },
   { to: '/clients', label: 'Clientes' },
   { to: '/opportunities', label: 'Oportunidades' },
+  { to: '/activities', label: 'Atividades' },
 ]
 
 function NavItems({ onNavigate }) {

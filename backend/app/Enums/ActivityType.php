@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Enums;
+
+enum ActivityType: string
+{
+    case Call = 'call';
+    case Email = 'email';
+    case Meeting = 'meeting';
+    case Task = 'task';
+    case FollowUp = 'follow_up';
+}

@@ -28,3 +28,8 @@ export async function convertLead({ id, payload }) {
   const { data } = await api.post(`/api/v1/leads/${id}/convert`, payload)
   return data.data
 }
+
+export async function fetchLeadOptions() {
+  const { data } = await api.get('/api/v1/leads/options')
+  return data.data
+}

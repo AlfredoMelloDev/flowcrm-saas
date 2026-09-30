@@ -10,10 +10,12 @@ use App\Http\Requests\Lead\IndexLeadRequest;
 use App\Http\Requests\Lead\StoreLeadRequest;
 use App\Http\Requests\Lead\UpdateLeadRequest;
 use App\Http\Resources\ClientResource;
+use App\Http\Resources\LeadOptionResource;
 use App\Http\Resources\LeadResource;
 use App\Http\Resources\OpportunityResource;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class LeadController extends Controller
@@ -104,5 +106,18 @@ class LeadController extends Controller
             ],
             'message' => 'Lead converted successfully.',
         ], 201);
+    }
+
+    public function options(Request $request): AnonymousResourceCollection
+    {
+        $this->authorize('viewAny', Lead::class);
+
+        $query = Lead::query();
+
+        if ($request->user()->isSeller()) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        return LeadOptionResource::collection($query->orderBy('name')->get());
     }
 }

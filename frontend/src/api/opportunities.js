@@ -18,3 +18,8 @@ export async function updateOpportunity({ id, payload }) {
 export async function deleteOpportunity(id) {
   await api.delete(`/api/v1/opportunities/${id}`)
 }
+
+export async function fetchOpportunityOptions() {
+  const { data } = await api.get('/api/v1/opportunities/options')
+  return data.data
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateOnly } from './formatters'
+import { formatDate, formatDateOnly, formatDateTime } from './formatters'
 
 describe('formatDateOnly', () => {
   it('formats a full ISO midnight-UTC datetime without shifting to the previous day', () => {
@@ -39,5 +39,26 @@ describe('formatDate (regression guard — real timestamps keep converting throu
 
   it('returns a placeholder for an empty value', () => {
     expect(formatDate(null)).toBe('—')
+  })
+})
+
+describe('formatDateTime (Activity scheduled_at/completed_at — local time, date AND time shown)', () => {
+  it('matches a plain (non-pinned) Intl date+time formatting of the same timestamp', () => {
+    // Same reasoning as the formatDate regression guard above: this must
+    // keep converting through the viewer's local timezone (unlike
+    // formatDateOnly), so the assertion is built from an unpinned Intl call
+    // rather than a hardcoded day/hour that would depend on the runner's TZ.
+    const timestamp = '2026-03-10T14:45:00.000000Z'
+    const expected = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(
+      new Date(timestamp),
+    )
+
+    expect(formatDateTime(timestamp)).toBe(expected)
+  })
+
+  it('returns a placeholder for an empty value', () => {
+    expect(formatDateTime(null)).toBe('—')
+    expect(formatDateTime(undefined)).toBe('—')
+    expect(formatDateTime('')).toBe('—')
   })
 })
