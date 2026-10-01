@@ -10,6 +10,7 @@ import { LeadsPage } from '../pages/LeadsPage'
 import { ClientsPage } from '../pages/ClientsPage'
 import { OpportunitiesPage } from '../pages/OpportunitiesPage'
 import { ActivitiesPage } from '../pages/ActivitiesPage'
+import { ReportsPage } from '../pages/ReportsPage'
 
 export function AppRoutes() {
   return (
@@ -28,6 +29,7 @@ export function AppRoutes() {
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/opportunities" element={<OpportunitiesPage />} />
           <Route path="/activities" element={<ActivitiesPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
         </Route>
       </Route>
 

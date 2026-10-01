@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\OpportunityController;
+use App\Http\Controllers\Api\V1\ReportsController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Middleware\EnsureAccountIsActive;
 use App\Http\Middleware\SetTenantContext;
@@ -27,6 +28,7 @@ Route::prefix('v1/auth')->group(function () {
 
 Route::prefix('v1')->middleware(['auth:sanctum', SetTenantContext::class, EnsureAccountIsActive::class])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index']);
+    Route::get('reports', [ReportsController::class, 'index']);
 
     Route::get('leads', [LeadController::class, 'index']);
     Route::post('leads', [LeadController::class, 'store']);
