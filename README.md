@@ -148,6 +148,19 @@ WON / LOST
 - Ações de concluir e reabrir, com `completed_at` controlado pelo backend
 - Isolamento multi-tenant e soft delete
 
+### Reports & Analytics
+
+- Relatórios por período (`date_from`/`date_to`, padrão últimos 30 dias)
+- Leads criados e convertidos, com taxa e tempo médio de conversão
+- Oportunidades ganhas/perdidas, com valores e tempo médio de fechamento
+- Motivos de perda
+- Atividades criadas/concluídas, por tipo e por responsável
+- Desempenho por responsável
+- Gráficos de tendência diária (CSS/SVG, sem dependência de biblioteca)
+- Snapshot atual do pipeline por estágio e valor em aberto
+- Filtros por período e por responsável (ADMIN/MANAGER)
+- Isolamento por papel: ADMIN/MANAGER visualizam a empresa inteira; SELLER visualiza somente os próprios dados
+
 ## Arquitetura
 
 Estrutura simplificada do repositório:
@@ -188,8 +201,8 @@ Essas camadas reduzem riscos conhecidos de vazamento de dados entre empresas, ma
 
 Números da última versão estável (Autenticação, Multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard e Activities/Follow-ups):
 
-**Backend:** 332 testes, 922 assertions
-**Frontend:** 126 testes
+**Backend:** 347 testes, 991 assertions
+**Frontend:** 140 testes
 
 Os testes cobrem autenticação, multi-tenancy, autorização por papel, isolamento de dados entre empresas, e as regras de negócio de Leads, Clientes, Opportunities, da conversão de Leads, do Dashboard e das Activities/Follow-ups.
 
@@ -217,6 +230,7 @@ Decisões arquiteturais, revisão das alterações propostas, execução dos tes
 - [x] Conversão Lead → Client + Opportunity
 - [x] Dashboard
 - [x] Activities / Follow-ups (com integração ao Dashboard)
+- [x] Reports & Analytics
 - [ ] Propostas
 - [ ] Produtos e Serviços
 - [ ] Anexos
@@ -277,7 +291,7 @@ npm run build
 
 🚧 Em desenvolvimento ativo.
 
-Fases 0–7 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard e Activities/Follow-ups, já com Activities integradas ao Dashboard).
+Fases 0–8 concluídas (estrutura inicial, autenticação, multi-tenancy, Leads, Clientes, Opportunities/Pipeline, Conversão de Leads, Dashboard, Activities/Follow-ups integradas ao Dashboard, e Reports & Analytics).
 
 ## Autor
 
